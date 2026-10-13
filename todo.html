@@ -1,0 +1,91 @@
+<!doctype = html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semana2</title>
+  </head>
+  <body>
+    <main>
+      <h1>Taller3</h1>
+      <form action="#" method="post">
+        <label for="nombre">Name:</label>
+        <input type="text" id="nombre" name="nombre" required />
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required />
+
+        <label for="tel">Teléfono:</label>
+        <input
+          type="tel"
+          id="tel"
+          name="tel"
+          pattern="[0-9]{10}"
+          placeholder="646 123 2304"
+          title="Debe ingresar un número de 10 dígitos sin espacios ni letras"
+          required
+        />
+
+        <label for="password">Contraseña:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          minlength="8"
+          required
+        />
+
+        <fieldset>
+          <legend>Elige un plan:</legend>
+          <input
+            type="radio"
+            id="mensual"
+            name="plan"
+            value="mensual"
+            required
+          />
+          <label for="plan1">Mensual</label>
+          <input type="radio" id="anual" name="plan" value="anual" required />
+          <label for="plan2">Anual</label>
+        </fieldset>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Precio</th>
+              <th>Duración</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mensual</td>
+              <td>$10</td>
+              <td>1 mes</td>
+            </tr>
+            <tr>
+              <td>Anual</td>
+              <td>$100</td>
+              <td>12 meses</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <label>
+          <input type="checkbox" id="terminos" name="terminos" required />
+          Acepto los términos y condiciones
+        </label>
+
+        <br><br>
+        <label for="comentarios">Comentarios:</label>
+        <br /><textarea id="comentarios" name="comentarios" rows="5" cols="50">
+        </textarea>
+        <br><br>
+
+        <button id="enviar">Enviar</button>
+
+        <p> Al quitar el name el navegador ignora ese dato y no lo envia al servidor al momento de hacer el envio
+      </form>
+    </main>
+  </body>
+</html>
