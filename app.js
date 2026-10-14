@@ -64,7 +64,8 @@ async function cargarPerfil() {
       localStorage.removeItem("accessToken");
       form.hidden = false;
       contenido.hidden = true;
-      throw new Error("La sesión expiró. Inicia sesión nuevamente.");
+      errorElement.textContent = "La sesión expiró. Inicia sesión nuevamente.";
+      return;
     }
 
     if (!response.ok) {
@@ -162,14 +163,35 @@ function mostrarTareas() {
 
   tareasFiltradas.forEach((tarea) => {
     const elemento = document.createElement("li");
-    elemento.textContent = tarea.todo;
+
+    const texto = document.createElement("span");
+    texto.textContent = tarea.todo;
 
     if (tarea.completed) {
-      elemento.textContent += " (Completada)";
+      texto.textContent += " (Completada)";
     } else {
-      elemento.textContent += " (Pendiente)";
+      texto.textContent += " (Pendiente)";
     }
 
+    const botonEstado = document.createElement("button");
+    botonEstado.type = "button";
+    botonEstado.textContent = tarea.completed
+      ? "Marcar pendiente"
+      : "Completar";
+
+    botonEstado.addEventListener("click", () => {
+      cambiarEstadoTarea(tarea.id);
+    });
+
+    const botonEliminar = document.createElement("button");
+    botonEliminar.type = "button";
+    botonEliminar.textContent = "Eliminar";
+
+    botonEliminar.addEventListener("click", () => {
+      eliminarTarea(tarea.id);
+    });
+
+    elemento.append(texto, " ", botonEstado, " ", botonEliminar);
     lista.appendChild(elemento);
   });
 }
@@ -229,3 +251,55 @@ formTarea.addEventListener("submit", async (e) => {
     botonAgregar.disabled = false;
   }
 });
+
+async function cambiarEstadoTarea(id) {
+  const tarea = tareas.find((item) => item.id === id);
+
+  if (!tarea) return;
+
+  try {
+    const response = await fetch(`${API}/todos/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        completed: !tarea.completed,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo actualizar la tarea.");
+    }
+
+    tareas = tareas.map((item) =>
+      item.id === id ? { ...item, completed: data.completed } : item,
+    );
+
+    mostrarTareas();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  }
+}
+
+async function eliminarTarea(id) {
+  try {
+    const response = await fetch(`${API}/todos/${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo eliminar la tarea.");
+    }
+
+    tareas = tareas.filter((tarea) => tarea.id !== id);
+
+    mostrarTareas();
+  } catch (error) {
+    errorElement.textContent = error.message;
+  }
+}
