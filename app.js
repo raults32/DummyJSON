@@ -174,3 +174,58 @@ function mostrarTareas() {
   });
 }
 
+js;
+document.getElementById("filtro").addEventListener("change", () => {
+  mostrarTareas();
+});
+
+document.getElementById("buscar").addEventListener("input", () => {
+  mostrarTareas();
+});
+
+js;
+const formTarea = document.getElementById("formTarea");
+const nuevaTarea = document.getElementById("nuevaTarea");
+const errorTarea = document.getElementById("errorTarea");
+const botonAgregar = document.getElementById("agregarTarea");
+
+formTarea.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const texto = nuevaTarea.value.trim();
+
+  if (!texto) return;
+
+  botonAgregar.disabled = true;
+  errorTarea.textContent = "";
+
+  try {
+    const response = await fetch(`${API}/todos/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        todo: texto,
+        completed: false,
+        userId: usuarioActual.id,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "No se pudo agregar la tarea.");
+    }
+
+    // Guardamos la tarea localmente porque DummyJSON simula los cambios.
+    tareas = [...tareas, data];
+
+    nuevaTarea.value = "";
+    mostrarTareas();
+  } catch (error) {
+    errorTarea.textContent = error.message;
+  } finally {
+    botonAgregar.disabled = false;
+  }
+});
