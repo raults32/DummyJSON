@@ -4,6 +4,8 @@ const form = document.getElementById("loginForm");
 const errorElement = document.getElementById("error");
 const button = document.getElementById("enviar");
 const contenido = document.getElementById("contenido");
+let usuarioActual = null;
+let tareas = [];
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -71,6 +73,10 @@ async function cargarPerfil() {
 
     const usuario = await response.json();
 
+    usuarioActual = usuario;
+
+    await cargarTareas(usuario.id);
+
     document.getElementById("foto").src = usuario.image;
 
     document.getElementById("nombre").textContent =
@@ -105,3 +111,66 @@ cerrarSesion.addEventListener("click", () => {
   errorElement.textContent = "";
   form.reset();
 });
+
+async function cargarTareas(userId) {
+  try {
+    const response = await fetch(`${API}/todos/user/${userId}`);
+
+    if (!response.ok) {
+      throw new Error("No se pudieron cargar las tareas.");
+    }
+
+    const data = await response.json();
+
+    tareas = data.todos;
+    mostrarTareas();
+
+    console.log("Tareas cargadas:", tareas);
+  } catch (error) {
+    errorElement.textContent = error.message;
+  }
+}
+
+function mostrarTareas() {
+  const lista = document.getElementById("listaTareas");
+  const filtro = document.getElementById("filtro").value;
+  const busqueda = document.getElementById("buscar").value.toLowerCase();
+
+  const completadas = tareas.filter((tarea) => tarea.completed).length;
+  const pendientes = tareas.filter((tarea) => !tarea.completed).length;
+
+  document.getElementById("totalTareas").textContent = tareas.length;
+  document.getElementById("tareasCompletadas").textContent = completadas;
+  document.getElementById("tareasPendientes").textContent = pendientes;
+
+  const porcentaje = tareas.length
+    ? Math.round((completadas / tareas.length) * 100)
+    : 0;
+
+  document.getElementById("progreso").textContent = `${porcentaje}%`;
+
+  const tareasFiltradas = tareas
+    .filter((tarea) => {
+      if (filtro === "pendientes") return !tarea.completed;
+      if (filtro === "completadas") return tarea.completed;
+      return true;
+    })
+    .filter((tarea) => tarea.todo.toLowerCase().includes(busqueda))
+    .sort((a, b) => a.id - b.id);
+
+  lista.replaceChildren();
+
+  tareasFiltradas.forEach((tarea) => {
+    const elemento = document.createElement("li");
+    elemento.textContent = tarea.todo;
+
+    if (tarea.completed) {
+      elemento.textContent += " (Completada)";
+    } else {
+      elemento.textContent += " (Pendiente)";
+    }
+
+    lista.appendChild(elemento);
+  });
+}
+

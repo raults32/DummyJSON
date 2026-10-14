@@ -7,7 +7,6 @@
   </head>
   <body>
     <main>
-      
       <form id="loginForm">
         <h1>Inicia Sesion</h1>
         <label for="username">Usuario:</label>
@@ -42,6 +41,29 @@
         <p>Correo: <span id="correo"></span></p>
         <p>Usuario: <span id="usuario"></span></p>
         <p>Edad: <span id="edad"></span></p>
+
+        <h2>Mis tareas</h2>
+
+        <div>
+          <p>Total: <span id="totalTareas">0</span></p>
+          <p>Completadas: <span id="tareasCompletadas">0</span></p>
+          <p>Pendientes: <span id="tareasPendientes">0</span></p>
+          <p>Progreso: <span id="progreso">0%</span></p>
+        </div>
+
+        <div>
+          <label for="filtro">Filtrar tareas:</label>
+          <select id="filtro">
+            <option value="todas">Todas</option>
+            <option value="pendientes">Pendientes</option>
+            <option value="completadas">Completadas</option>
+          </select>
+
+          <label for="buscar">Buscar:</label>
+          <input type="text" id="buscar" placeholder="Buscar tarea..." />
+        </div>
+
+        <ul id="listaTareas"></ul>
 
         <button id="cerrarSesion" type="button">Cerrar sesión</button>
       </section>
